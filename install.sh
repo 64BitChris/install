@@ -524,30 +524,7 @@ if [ -n "$INSTALL_PROXY" ]; then
 	# Remove the trailing slash if it exists.
 	SERVER=${SERVER%/}
 
-	if [ -z "$TOKEN" ]; then
-		get_input "Please enter your Wavefront token:" ""
-		TOKEN=$user_input
-	fi
-	echo_step "  Testing token against $SERVER/daemon/test?token=$TOKEN"
-	if command_exists wget; then
-		STATUS=$(wget --method=POST -O /dev/null $SERVER/daemon/test?token=$TOKEN 2>&1 | grep -F HTTP | cut -d ' ' -f 6)
-	elif command_exists curl; then
-		STATUS=$(curl -sL -w "%{http_code}" -X POST $SERVER/daemon/test?token=$TOKEN -o /dev/null)
-	fi
-	case $STATUS in
-	200)
-		echo_success
-		;;
-	401)
-		exit_with_failure "Failed to validate token. Token ($TOKEN) does not belongs to a user with Agent Management permissions. ($STATUS)"
-		;;
-	404)
-		echo_warning "Failed to validate token. ($STATUS) Will attempt to proceed."
-		;;
-	*)
-		exit_with_failure "Failed to validate token. Please confirm that the URL is valid ($SERVER) and that the token ($TOKEN) belongs to a user with Agent Management permissions. ($STATUS)"
-		;;
-	esac
+        TOKEN="token-purposely-not-set"
 	case $OPERATING_SYSTEM in
 	DEBIAN)		
     	echo_step "Installing Wavefront Proxy (Debian) with token: $TOKEN for cluster at: $SERVER"; echo		
